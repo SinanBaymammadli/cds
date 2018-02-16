@@ -1,58 +1,67 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
+import React, { Component } from "react";
+import { Platform, StyleSheet, Text, View } from "react-native";
+import { StackNavigator, DrawerNavigator } from "react-navigation";
+import axios from "axios";
+import SplashScreen from "react-native-splash-screen";
+import { BASE_URL, API_TOKEN } from "react-native-dotenv";
 
-import React, { Component } from 'react';
-import {
-  Platform,
-  StyleSheet,
-  Text,
-  View
-} from 'react-native';
+import Home from "./src/Home";
+import Login from "./src/Login";
+import Logout from "./src/Logout";
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' +
-    'Cmd+D or shake for dev menu',
-  android: 'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
+const HomeRouter = DrawerNavigator({
+  Home: {
+    screen: Home
+  },
+  Logout: {
+    screen: Logout
+  }
 });
 
-type Props = {};
-export default class App extends Component<Props> {
+const RootRouter = StackNavigator(
+  {
+    Home: {
+      screen: HomeRouter
+    },
+    Login: {
+      screen: Login
+    }
+  },
+  {
+    initialRouteName: "Home",
+    headerMode: "none"
+  }
+);
+
+axios.defaults.baseURL = BASE_URL;
+axios.defaults.headers.common["Authorization"] = `Bearer ${API_TOKEN}`;
+axios.defaults.headers.common["Content-Type"] = "application/json";
+
+export default class App extends Component {
+  componentDidMount() {
+    SplashScreen.hide();
+  }
+
   render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit App.js
-        </Text>
-        <Text style={styles.instructions}>
-          {instructions}
-        </Text>
-      </View>
-    );
+    return <RootRouter />;
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F5FCFF"
   },
   welcome: {
     fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
+    textAlign: "center",
+    margin: 10
   },
   instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
+    textAlign: "center",
+    color: "#333333",
+    marginBottom: 5
+  }
 });
