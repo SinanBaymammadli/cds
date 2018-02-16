@@ -23,6 +23,7 @@ export default class Login extends Component {
   };
 
   login = async () => {
+    AsyncStorage.setItem("driver_id", "1");
     this.props.navigation.navigate("Home");
     // this.setState({
     //   loaded: false,

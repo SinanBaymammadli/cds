@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import PushNotification from "react-native-push-notification";
+import CheckBox from "react-native-check-box";
+
 import Notification from "./Notification";
 
 export default class Home extends Component {
@@ -90,6 +92,22 @@ export default class Home extends Component {
           accessibilityLabel="Learn more about this purple button"
         />
 
+        <View style={styles.options}>
+          <CheckBox
+            style={styles.checkbox}
+            onClick={() => null}
+            isChecked={this.state.fast}
+            leftText={"Left"}
+          />
+
+          <CheckBox
+            style={styles.checkbox}
+            onClick={() => null}
+            isChecked={this.state.urgently}
+            leftText={"Left"}
+          />
+        </View>
+
         <FlatList
           ListEmptyComponent={
             <Text style={styles.welcome}>Sifariş yoxdur.</Text>
@@ -145,7 +163,7 @@ export default class Home extends Component {
             </View>
           )}
         />
-        <Notification/>
+        <Notification />
       </View>
     );
   }
@@ -168,6 +186,15 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     padding: 16
+  },
+  options: {
+    flexDirection: "row",
+    marginHorizontal: 15,
+    marginTop: 10
+  },
+  checkbox: {
+    flex: 1,
+    marginHorizontal: 15
   },
   welcome: {
     fontSize: 20,
