@@ -65,11 +65,14 @@ export default class App extends Component {
   };
 
   componentWillMount = async () => {
-    const driverId = await AsyncStorage.getItem("driver_id");
-    if (driverId !== null) {
-      this.setState({ loaded: true, loggedIn: true });
-    } else {
-      this.setState({ loaded: true });
+    try {
+      const driverId = await AsyncStorage.getItem("driver_id");
+      this.setState({
+        loaded: true,
+        loggedIn: !!driverId
+      });
+    } catch (error) {
+      console.log(error);
     }
   };
 

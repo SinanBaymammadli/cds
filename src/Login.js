@@ -8,6 +8,8 @@ import {
   Text,
   View,
   AsyncStorage,
+  Keyboard,
+  BackHandler,
   ActivityIndicator
 } from "react-native";
 import axios from "axios";
@@ -22,53 +24,53 @@ export default class Login extends Component {
     error: ""
   };
 
+  componentDidMount = () => {
+    BackHandler.addEventListener("hardwareBackPress", () => true);
+  };
+
   login = async () => {
-    AsyncStorage.setItem("driver_id", "1");
-    this.props.navigation.navigate("Home");
-    // this.setState({
-    //   loaded: false,
-    //   error: ""
-    // });
+    Keyboard.dismiss();
+    this.setState({
+      loaded: false,
+      error: ""
+    });
 
-    // const { driver_id, password } = this.state;
+    const { driver_id, password } = this.state;
 
-    // const data = {
-    //   driver_id: parseInt(driver_id),
-    //   password
-    // };
+    const data = {
+      driver_id: parseInt(driver_id),
+      password
+    };
 
-    // try {
-    //   const response = await axios.post("/drivers/auth", { data });
-    //   const result = response.data.data;
+    try {
+      const response = await axios.post("/api/drivers/auth", data);
+      const result = response.data.data;
 
-    //   console.log(response);
+      if (result) {
+        try {
+          await AsyncStorage.setItem("driver_id", result.id.toString());
 
-    //   if (result) {
-    //     try {
-    //       await AsyncStorage.setItem("driver_id", result.id.toString());
+          this.setState({
+            error: "",
+            loaded: true
+          });
 
-    //       this.setState({
-    //         error: "",
-    //         loaded: true
-    //       });
-
-    //       this.props.navigation.navigate("Home");
-    //     } catch (error) {
-    //       console.log(error);
-    //     }
-    //   } else {
-    //     this.setState({
-    //       error: response.data[0],
-    //       loaded: true
-    //     });
-    //   }
-    // } catch (error) {
-    //   this.setState({
-    //     error: "Network error happened.",
-    //     loaded: true
-    //   });
-    //   console.log(error);
-    // }
+          this.props.navigation.navigate("Home");
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        this.setState({
+          error: response.data[0],
+          loaded: true
+        });
+      }
+    } catch (error) {
+      this.setState({
+        error: "Network error happened.",
+        loaded: true
+      });
+    }
   };
 
   render() {

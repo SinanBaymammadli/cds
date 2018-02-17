@@ -7,11 +7,15 @@ import {
   View,
   TouchableHighlight,
   FlatList,
-  BackHandler
+  AsyncStorage,
+  BackHandler,
+  ToastAndroid
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import PushNotification from "react-native-push-notification";
 import CheckBox from "react-native-check-box";
+import axios from "axios";
+// import Pusher from "pusher-js/react-native";
 
 import Notification from "./Notification";
 
@@ -19,19 +23,13 @@ export default class Home extends Component {
   state = {
     fast: true,
     urgently: true,
-    data: [
-      {
-        id: "0",
-        delivery_type: "0",
-        address: "baku"
-      }
-    ],
+    data: [],
     refreshing: false
   };
 
   componentDidMount = async () => {
     BackHandler.addEventListener("hardwareBackPress", () => true);
-    // this.getOrders();
+    this.getOrders();
   };
 
   notify = () => {
@@ -49,7 +47,7 @@ export default class Home extends Component {
     try {
       const driverId = await AsyncStorage.getItem("driver_id");
       if (driverId !== null) {
-        axios.get(`/drivers/${driverId}/orders`).then(res => {
+        axios.get(`/api/drivers/${driverId}/orders`).then(res => {
           this.setState({
             data: res.data.data,
             refreshing: false
@@ -61,7 +59,20 @@ export default class Home extends Component {
     }
   };
 
-  _keyExtractor = (item, index) => item.id;
+  orderCompleted = async order_id => {
+    try {
+      const response = await axios.post("/api/orders/complete", { order_id });
+      const isCompleted = response.data[0] === "true" ? true : false;
+      if (isCompleted) {
+        this.getOrders();
+        ToastAndroid.show("Sifariş bitirildi.", ToastAndroid.LONG);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  _keyExtractor = (item, index) => item.id.toString();
 
   render() {
     const list = this.state.data.filter(data => {
@@ -82,44 +93,63 @@ export default class Home extends Component {
           >
             <Icon name="menu" size={30} />
           </TouchableHighlight>
-          <Text style={styles.welcome}>Home</Text>
+          <Text style={styles.heading}>Sifarişlər</Text>
         </View>
 
-        <Button
+        {/* <Button
           onPress={this.notify}
           title="Notify"
           color="#841584"
           accessibilityLabel="Learn more about this purple button"
-        />
+        /> */}
 
         <View style={styles.options}>
           <CheckBox
             style={styles.checkbox}
-            onClick={() => null}
+            onClick={() =>
+              this.setState(prevState => ({
+                fast: !prevState.fast
+              }))
+            }
+            checkBoxColor="#F44336"
             isChecked={this.state.fast}
-            leftText={"Left"}
+            leftText={"Təcili"}
           />
 
           <CheckBox
             style={styles.checkbox}
-            onClick={() => null}
+            onClick={() =>
+              this.setState(prevState => ({
+                urgently: !prevState.urgently
+              }))
+            }
+            checkBoxColor="#03A9F4"
             isChecked={this.state.urgently}
-            leftText={"Left"}
+            leftText={"Sürətli"}
           />
         </View>
 
         <FlatList
           ListEmptyComponent={
-            <Text style={styles.welcome}>Sifariş yoxdur.</Text>
+            <Text style={styles.noOrderText}>Sifariş yoxdur.</Text>
           }
           data={list}
           keyExtractor={this._keyExtractor}
           onRefresh={this.getOrders}
           refreshing={this.state.refreshing}
-          style={styles.list}
           renderItem={({ item }) => (
             <View style={styles.card}>
-              <Text style={styles.welcome}>{item.address}</Text>
+              <Text>Adres: {item.address}</Text>
+              <Text>Ödəniş: {item.fee}</Text>
+              <Text>Status: {item.delivery_type ? "Təcili" : "Sürətli"}</Text>
+              <Text>Məhsul: {item.product}</Text>
+              <View style={styles.completeOrderBtn}>
+                <Button
+                  onPress={() => this.orderCompleted(item.id)}
+                  title="Sifarişi bitir"
+                  color={item.delivery_type ? "#F44336" : "#03A9F4"}
+                />
+              </View>
               {/* <Button
                 primary
                 onPress={() => {
@@ -189,21 +219,31 @@ const styles = StyleSheet.create({
   },
   options: {
     flexDirection: "row",
-    marginHorizontal: 15,
-    marginTop: 10
+    padding: 10,
+    borderBottomWidth: 1,
+    borderColor: "#ddd"
   },
   checkbox: {
     flex: 1,
     marginHorizontal: 15
   },
-  welcome: {
+  heading: {
     fontSize: 20,
     textAlign: "center",
     margin: 10
   },
+  noOrderText: {
+    textAlign: "center",
+    paddingVertical: 15
+  },
   card: {
     margin: 15,
+    padding: 15,
     borderWidth: 1,
-    borderColor: "#ddd"
+    borderColor: "#ddd",
+    borderRadius: 3
+  },
+  completeOrderBtn: {
+    marginTop: 10
   }
 });

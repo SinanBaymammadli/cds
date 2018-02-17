@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "axios": "^0.17.1",
+    "pusher-js": "^4.2.2",
     "react": "16.2.0",
     "react-native": "0.53.0",
     "react-native-check-box": "^2.0.2",
