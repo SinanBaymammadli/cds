@@ -1,4 +1,5 @@
-import React, { Component } from "react";
+import { Component } from "react";
+import PropTypes from "prop-types";
 import { AsyncStorage } from "react-native";
 
 export default class Logout extends Component {
@@ -12,3 +13,9 @@ export default class Logout extends Component {
     return null;
   }
 }
+
+Logout.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired
+  }).isRequired
+};

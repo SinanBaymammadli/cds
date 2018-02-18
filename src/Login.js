@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import {
   StyleSheet,
   KeyboardAvoidingView,
@@ -10,7 +11,8 @@ import {
   AsyncStorage,
   Keyboard,
   BackHandler,
-  ActivityIndicator
+  ActivityIndicator,
+  ToastAndroid
 } from "react-native";
 import axios from "axios";
 
@@ -58,7 +60,7 @@ export default class Login extends Component {
 
           this.props.navigation.navigate("Home");
         } catch (error) {
-          console.log(error);
+          ToastAndroid.show(error, ToastAndroid.SHORT);
         }
       } else {
         this.setState({
@@ -94,10 +96,10 @@ export default class Login extends Component {
               onChangeText={driver_id => this.setState({ driver_id })}
               value={this.state.driver_id}
               blurOnSubmit={false}
-              onSubmitEditing={() => this.refs.PasswordInput.focus()}
+              onSubmitEditing={() => this.PasswordInput.focus()}
             />
             <TextInput
-              ref="PasswordInput"
+              ref={PasswordInput => (this.PasswordInput = PasswordInput)}
               style={styles.input}
               placeholder="Password"
               secureTextEntry={true}
@@ -113,6 +115,12 @@ export default class Login extends Component {
     );
   }
 }
+
+Login.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired
+  }).isRequired
+};
 
 const styles = StyleSheet.create({
   container: {

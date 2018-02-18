@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import {
   StyleSheet,
-  Text,
   View,
   AsyncStorage,
-  ActivityIndicator
+  ActivityIndicator,
+  ToastAndroid
 } from "react-native";
 import { StackNavigator, DrawerNavigator } from "react-navigation";
 import axios from "axios";
@@ -72,7 +72,7 @@ export default class App extends Component {
         loggedIn: !!driverId
       });
     } catch (error) {
-      console.log(error);
+      ToastAndroid.show(error, ToastAndroid.SHORT);
     }
   };
 

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import {
   Button,
-  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -34,7 +34,7 @@ export default class Home extends Component {
 
   notify = () => {
     PushNotification.localNotificationSchedule({
-      message: "My Notification Message", // (required)
+      message: "My Notification Message",
       date: new Date(Date.now() + 3 * 1000)
     });
   };
@@ -55,7 +55,7 @@ export default class Home extends Component {
         });
       }
     } catch (error) {
-      console.log(error);
+      ToastAndroid.show(error, ToastAndroid.SHORT);
     }
   };
 
@@ -68,11 +68,11 @@ export default class Home extends Component {
         ToastAndroid.show("Sifariş bitirildi.", ToastAndroid.LONG);
       }
     } catch (error) {
-      console.log(error);
+      ToastAndroid.show(error, ToastAndroid.SHORT);
     }
   };
 
-  _keyExtractor = (item, index) => item.id.toString();
+  _keyExtractor = item => item.id.toString();
 
   render() {
     const list = this.state.data.filter(data => {
@@ -150,46 +150,6 @@ export default class Home extends Component {
                   color={item.delivery_type ? "#F44336" : "#03A9F4"}
                 />
               </View>
-              {/* <Button
-                primary
-                onPress={() => {
-                  this.orderCompleted(item.id);
-                  Toast.show({
-                    text: "Sifariş silindi.",
-                    position: "bottom",
-                    buttonText: "Okay"
-                  });
-                }}
-              >
-                <Text>Sifarişi bitir</Text>
-              </Button> */}
-              {/* <Card>
-                <CardItem>
-                  <Body>
-                    <Text>Adres: {item.address}</Text>
-                    <Text>Ödəniş: {item.fee}</Text>
-                    <Text>
-                      Status: {item.delivery_type ? "Təcili" : "Sürətli"}
-                    </Text>
-                    <Text>Məhsul: {item.product}</Text>
-                  </Body>
-                </CardItem>
-                <CardItem footer>
-                  <Button
-                    primary
-                    onPress={() => {
-                      this.orderCompleted(item.id);
-                      Toast.show({
-                        text: "Sifariş silindi.",
-                        position: "bottom",
-                        buttonText: "Okay"
-                      });
-                    }}
-                  >
-                    <Text>Sifarişi bitir</Text>
-                  </Button>
-                </CardItem>
-              </Card> */}
             </View>
           )}
         />
@@ -198,6 +158,12 @@ export default class Home extends Component {
     );
   }
 }
+
+Home.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired
+  }).isRequired
+};
 
 const styles = StyleSheet.create({
   container: {
