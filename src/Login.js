@@ -29,7 +29,6 @@ export default class Login extends Component {
   };
 
   login = async () => {
-    Keyboard.dismiss();
     this.setState({
       loaded: false,
       error: ""
@@ -54,6 +53,8 @@ export default class Login extends Component {
             error: "",
             loaded: true
           });
+
+          Keyboard.dismiss();
 
           this.props.navigation.navigate("Home");
         } catch (error) {

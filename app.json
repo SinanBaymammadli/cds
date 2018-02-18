@@ -1,4 +1,5 @@
 {
-  "name": "cdsMobile",
-  "displayName": "cdsMobile"
+  "name": "CDS",
+  "displayName": "CDS",
+  "icon": "./src/asstes/logo.png"
 }
