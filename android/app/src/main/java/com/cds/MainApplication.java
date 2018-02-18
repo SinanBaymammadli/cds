@@ -1,4 +1,4 @@
-package com.cdsmobile;
+package com.cds;
 
 import android.app.Application;
 
