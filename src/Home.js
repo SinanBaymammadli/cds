@@ -9,7 +9,8 @@ import {
   FlatList,
   AsyncStorage,
   BackHandler,
-  ToastAndroid
+  ToastAndroid,
+  Animated
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import PushNotification from "react-native-push-notification";
@@ -19,7 +20,14 @@ import axios from "axios";
 
 import Notification from "./Notification";
 
+const ANIMATION_DURATION = 1000;
+
 export default class Home extends Component {
+  constructor(props) {
+    super(props);
+    this._animated = new Animated.Value(0);
+  }
+
   state = {
     fast: true,
     urgently: true,
@@ -47,14 +55,38 @@ export default class Home extends Component {
     try {
       const driverId = await AsyncStorage.getItem("driver_id");
       if (driverId !== null) {
-        axios.get(`/api/drivers/${driverId}/orders`).then(res => {
+        try {
+          const res = await axios.get(`/api/drivers/${driverId}/orders`);
+          if (res.data) {
+            this.setState(
+              {
+                data: res.data.data,
+                refreshing: false
+              },
+              () => {
+                Animated.timing(this._animated, {
+                  toValue: 1,
+                  duration: ANIMATION_DURATION
+                }).start();
+              }
+            );
+          } else {
+            this.setState({
+              refreshing: false
+            });
+            ToastAndroid.show("Server is not responding.", ToastAndroid.SHORT);
+          }
+        } catch (error) {
           this.setState({
-            data: res.data.data,
             refreshing: false
           });
-        });
+          ToastAndroid.show(error.message, ToastAndroid.SHORT);
+        }
       }
     } catch (error) {
+      this.setState({
+        refreshing: false
+      });
       ToastAndroid.show(error, ToastAndroid.SHORT);
     }
   };
@@ -63,7 +95,12 @@ export default class Home extends Component {
     try {
       const response = await axios.post("/api/orders/complete", { order_id });
       const isCompleted = response.data[0] === "true" ? true : false;
+
       if (isCompleted) {
+        Animated.timing(this._animated, {
+          toValue: 0,
+          duration: ANIMATION_DURATION
+        }).start();
         this.getOrders();
         ToastAndroid.show("Sifariş bitirildi.", ToastAndroid.LONG);
       }
@@ -83,8 +120,12 @@ export default class Home extends Component {
       }
     });
 
+    const animation = [styles.row, { opacity: this._animated }];
+
     return (
       <View style={styles.container}>
+        <Notification />
+
         <View style={styles.header}>
           <TouchableHighlight
             onPress={() => this.props.navigation.navigate("DrawerOpen")}
@@ -138,22 +179,23 @@ export default class Home extends Component {
           onRefresh={this.getOrders}
           refreshing={this.state.refreshing}
           renderItem={({ item }) => (
-            <View style={styles.card}>
-              <Text>Adres: {item.address}</Text>
-              <Text>Ödəniş: {item.fee}</Text>
-              <Text>Status: {item.delivery_type ? "Təcili" : "Sürətli"}</Text>
-              <Text>Məhsul: {item.product}</Text>
-              <View style={styles.completeOrderBtn}>
-                <Button
-                  onPress={() => this.orderCompleted(item.id)}
-                  title="Sifarişi bitir"
-                  color={item.delivery_type ? "#F44336" : "#03A9F4"}
-                />
+            <Animated.View style={animation}>
+              <View style={styles.card}>
+                <Text>Adres: {item.address}</Text>
+                <Text>Ödəniş: {item.fee}</Text>
+                <Text>Status: {item.delivery_type ? "Təcili" : "Sürətli"}</Text>
+                <Text>Məhsul: {item.product}</Text>
+                <View style={styles.completeOrderBtn}>
+                  <Button
+                    onPress={() => this.orderCompleted(item.id)}
+                    title="Sifarişi bitir"
+                    color={item.delivery_type ? "#F44336" : "#03A9F4"}
+                  />
+                </View>
               </View>
-            </View>
+            </Animated.View>
           )}
         />
-        <Notification />
       </View>
     );
   }
