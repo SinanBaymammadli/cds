@@ -10,13 +10,15 @@ import {
   View,
   AsyncStorage,
   Keyboard,
-  BackHandler,
   ActivityIndicator,
   ToastAndroid
 } from "react-native";
 import axios from "axios";
 
-import logo from "./assets/logo.png";
+import { USER_KEY } from "../auth";
+import { ResetToUser } from "../router";
+
+import logo from "../assets/logo.png";
 
 export default class Login extends Component {
   state = {
@@ -24,10 +26,6 @@ export default class Login extends Component {
     password: "",
     loaded: true,
     error: ""
-  };
-
-  componentDidMount = () => {
-    BackHandler.addEventListener("hardwareBackPress", () => true);
   };
 
   login = async () => {
@@ -49,7 +47,8 @@ export default class Login extends Component {
 
       if (result) {
         try {
-          await AsyncStorage.setItem("driver_id", result.id.toString());
+          await AsyncStorage.setItem(USER_KEY, result.id.toString());
+          await AsyncStorage.setItem("userName", result.name.toString());
 
           this.setState({
             error: "",
@@ -58,7 +57,7 @@ export default class Login extends Component {
 
           Keyboard.dismiss();
 
-          this.props.navigation.navigate("Home");
+          this.props.navigation.dispatch(ResetToUser);
         } catch (error) {
           ToastAndroid.show(error, ToastAndroid.SHORT);
         }
@@ -118,7 +117,7 @@ export default class Login extends Component {
 
 Login.propTypes = {
   navigation: PropTypes.shape({
-    navigate: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired
   }).isRequired
 };
 

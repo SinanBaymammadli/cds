@@ -5,20 +5,17 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableHighlight,
   FlatList,
   AsyncStorage,
-  BackHandler,
   ToastAndroid,
   Animated
 } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
 import PushNotification from "react-native-push-notification";
 import CheckBox from "react-native-check-box";
 import axios from "axios";
 // import Pusher from "pusher-js/react-native";
 
-import Notification from "./Notification";
+import Notification from "../Notification";
 
 const ANIMATION_DURATION = 1000;
 
@@ -36,7 +33,6 @@ export default class Home extends Component {
   };
 
   componentDidMount = async () => {
-    BackHandler.addEventListener("hardwareBackPress", () => true);
     this.getOrders();
   };
 
@@ -126,17 +122,6 @@ export default class Home extends Component {
       <View style={styles.container}>
         <Notification />
 
-        <View style={styles.header}>
-          <TouchableHighlight
-            onPress={() => this.props.navigation.navigate("DrawerOpen")}
-            style={styles.menuBtn}
-            underlayColor="#ddd"
-          >
-            <Icon name="menu" size={30} />
-          </TouchableHighlight>
-          <Text style={styles.heading}>Sifarişlər</Text>
-        </View>
-
         {/* <Button
           onPress={this.notify}
           title="Notify"
@@ -219,11 +204,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderBottomWidth: 1,
     borderColor: "#ddd"
-  },
-  menuBtn: {
-    position: "absolute",
-    left: 0,
-    padding: 16
   },
   options: {
     flexDirection: "row",
