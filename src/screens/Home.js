@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import {
-  Button,
   StyleSheet,
   Text,
   View,
@@ -14,6 +13,9 @@ import PushNotification from "react-native-push-notification";
 import CheckBox from "react-native-check-box";
 import axios from "axios";
 // import Pusher from "pusher-js/react-native";
+
+import Button from "../components/Button";
+import { primaryColor, secondaryColor } from "../styles/colors";
 
 import Notification from "../Notification";
 
@@ -137,7 +139,7 @@ export default class Home extends Component {
                 fast: !prevState.fast
               }))
             }
-            checkBoxColor="#F44336"
+            checkBoxColor={secondaryColor}
             isChecked={this.state.fast}
             leftText={"Təcili"}
           />
@@ -149,7 +151,7 @@ export default class Home extends Component {
                 urgently: !prevState.urgently
               }))
             }
-            checkBoxColor="#03A9F4"
+            checkBoxColor={primaryColor}
             isChecked={this.state.urgently}
             leftText={"Sürətli"}
           />
@@ -173,8 +175,10 @@ export default class Home extends Component {
                 <View style={styles.completeOrderBtn}>
                   <Button
                     onPress={() => this.orderCompleted(item.id)}
-                    title="Sifarişi bitir"
-                    color={item.delivery_type ? "#F44336" : "#03A9F4"}
+                    text="Sifarişi bitir"
+                    backgroundColor={
+                      item.delivery_type ? secondaryColor : primaryColor
+                    }
                   />
                 </View>
               </View>

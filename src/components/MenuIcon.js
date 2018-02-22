@@ -1,16 +1,19 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { TouchableHighlight, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
+import Touchable from "react-native-platform-touchable";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
+import { primaryColor } from "../styles/colors";
+
 const MenuIcon = ({ navigation }) => (
-  <TouchableHighlight
+  <Touchable
     onPress={() => navigation.navigate("DrawerOpen")}
-    style={s.MenuIcon}
-    underlayColor="#ddd"
+    style={styles.MenuIcon}
+    background={Touchable.Ripple(primaryColor, true)}
   >
     <Icon name="menu" size={30} />
-  </TouchableHighlight>
+  </Touchable>
 );
 
 MenuIcon.propTypes = {
@@ -19,7 +22,7 @@ MenuIcon.propTypes = {
   }).isRequired
 };
 
-const s = StyleSheet.create({
+const styles = StyleSheet.create({
   MenuIcon: {
     paddingVertical: 10,
     paddingHorizontal: 16

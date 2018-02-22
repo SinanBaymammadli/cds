@@ -5,7 +5,6 @@ import {
   KeyboardAvoidingView,
   Image,
   TextInput,
-  Button,
   Text,
   View,
   AsyncStorage,
@@ -14,6 +13,9 @@ import {
   ToastAndroid
 } from "react-native";
 import axios from "axios";
+
+import Button from "../components/Button";
+import { primaryColor, secondaryColor } from "../styles/colors";
 
 import { USER_KEY } from "../auth";
 import { ResetToUser } from "../router";
@@ -83,13 +85,17 @@ export default class Login extends Component {
             <View style={styles.imageWrapper}>
               <Image source={logo} style={styles.image} />
             </View>
-            {!this.state.loaded && (
-              <ActivityIndicator size="small" color="#0000ff" />
-            )}
-            <Text style={styles.errorText}>{this.state.error}</Text>
+            <View style={styles.feedbackWrapper}>
+              {!this.state.loaded ? (
+                <ActivityIndicator size="small" color={primaryColor} />
+              ) : (
+                <Text style={styles.errorText}>{this.state.error}</Text>
+              )}
+            </View>
             <TextInput
               style={styles.input}
               placeholder="Driver id"
+              autoFocus={true}
               autoCapitalize="none"
               returnKeyType="next"
               onChangeText={driver_id => this.setState({ driver_id })}
@@ -107,7 +113,8 @@ export default class Login extends Component {
               value={this.state.password}
               onSubmitEditing={this.login}
             />
-            <Button onPress={this.login} title="Login" />
+
+            <Button text="Login" onPress={this.login} />
           </View>
         </KeyboardAvoidingView>
       </View>
@@ -136,7 +143,7 @@ const styles = StyleSheet.create({
   },
   imageWrapper: {
     alignItems: "center",
-    marginBottom: 30
+    marginBottom: 10
   },
   image: {
     width: 100,
@@ -144,6 +151,10 @@ const styles = StyleSheet.create({
   },
   errorText: {
     textAlign: "center",
-    color: "red"
+    color: secondaryColor
+  },
+  feedbackWrapper: {
+    minHeight: 20,
+    marginBottom: 10
   }
 });
